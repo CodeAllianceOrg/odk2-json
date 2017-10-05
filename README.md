@@ -1,3 +1,30 @@
+# ODK 2.0 <-> [friendly] JSON Converter
+
+## About
+
+This library was seeded by [Typescript Library Starter](https://github.com/alexjoverm/typescript-library-starter). See the link or below for more information.
+
+We make heavy use of the following dependencies:
+
+- [js-xlsx](https://github.com/SheetJS/js-xlsx) _Apache 2.0_
+- [js-base64](https://github.com/dankogai/js-base64) _BSD-3-Clause_
+- [benetech/app-designer](https://github.com/benetech/app-designer) 
+
+## Design
+
+This library is meant to facilitate conversion between a friendly JSON format and the ODK2.0 XLSX format. At a high leve, the converter should 1) validate the input (JSON or ODK2.0 XLSX), 2) store the input in a common format using [js-xlsx](https://github.com/SheetJS/js-xlsx), and 3) export (JSON or ODK2.0 XLSX).
+
+## Development
+
+To submit changes, please [create a pull request](https://help.github.com/articles/creating-a-pull-request/). Please use the following checklist as a guideline:
+
+- Are all tests passing?
+    - `npm run prepush`
+- Did the pull request include a description of all changes? Does it account for any new or updated dependencies?
+- Does the pull request solve more than one problem? Could it be broken down into several, independent PRs?
+
+It's important to note that these are only guidelines and can and should be broken when appropriate. However a healthy code culture can be more easily cultivated when we all agree to and follow a set of simple rules.
+
 # TypeScript library starter
 
 [![styled with prettier](https://img.shields.io/badge/styled_with-prettier-ff69b4.svg)](https://github.com/prettier/prettier)
