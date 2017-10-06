@@ -2,7 +2,7 @@
 // import "core-js/fn/array.find"
 // ...
 
-import { Base64 } from 'js-base64'
+import * as XLSX from 'xlsx'
 
 export class ODKConverter {
   public fromJSON(input: any): ODKSurvey {
@@ -12,30 +12,38 @@ export class ODKConverter {
 
 export class ODKSurvey {
   public toXLSXBase64(): string {
-    return Base64.encode(
-      [
-        1,
-        2,
-        3,
-        4,
-        5,
-        6,
-        7,
-        8,
-        9,
-        10,
-        11,
-        12,
-        13,
-        14,
-        15,
-        16,
-        17,
-        18,
-        19,
-        20,
-        21
-      ].join(',')
+    const wb = XLSX.utils.book_new()
+
+    const settings = [
+      {
+        setting_name: 'table_id',
+        value: 'a'
+      },
+      {
+        setting_name: 'form_id',
+        value: 'a'
+      },
+      {
+        setting_name: 'survey',
+        'display.title': 'Sample'
+      }
+    ]
+
+    const data = [
+      {
+        type: 'text',
+        name: 'name',
+        'display.text': 'display.text'
+      }
+    ]
+
+    XLSX.utils.book_append_sheet(wb, XLSX.utils.json_to_sheet(data), 'survey')
+    XLSX.utils.book_append_sheet(
+      wb,
+      XLSX.utils.json_to_sheet(settings),
+      'settings'
     )
+
+    return XLSX.write(wb, { bookType: 'xlsx', type: 'base64' })
   }
 }

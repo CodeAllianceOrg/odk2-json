@@ -3,7 +3,8 @@ import * as XLSX from 'xlsx'
 import { _ } from 'underscore'
 import * as XLSXConverter2 from 'jswebviewer/xlsxconverter/XLSXConverter2'
 
-const ODK2_N_COLS = 21
+const ODK2_MIN_NUM_COLS = 3
+const ODK2_REQUIRED_COLS = ['type', 'name', 'display.text']
 
 /**
  * Remove empty strings for the XLSXConverter
@@ -39,6 +40,13 @@ function to_json(workbook) {
   return result
 }
 
+// https://github.com/SheetJS/js-xlsx/issues/214#issuecomment-96843418
+function get_header_row(sheet) {
+  const aoa = XLSX.utils.sheet_to_json(sheet, { header: 1 })
+
+  return aoa[0]
+}
+
 describe('ODKConverter', () => {
   it('is instantiable', () => {
     expect(new ODKConverter()).toBeInstanceOf(ODKConverter)
@@ -60,7 +68,7 @@ describe('ODKConverter', () => {
 })
 
 describe('ODKSurvey', () => {
-  it('exports XLSX with the correct number of columns', () => {
+  it('exports XLSX with the correct columns', () => {
     /*
           https://github.com/sheetjs/js-xlsx#guessing-file-type
 
@@ -68,7 +76,7 @@ describe('ODKSurvey', () => {
 
           Excel is extremely aggressive in reading files. Adding an XLS extension to any display text file (where the only characters are ANSI display chars) tricks Excel into thinking that the file is potentially a CSV or TSV file, even if it is only one column! This library attempts to replicate that behavior.
 
-          The best approach is to validate the desired worksheet and ensure it has the expected number of rows or columns. Extracting the range is extremely simple:
+          The best approach is to validate the desired worksheet and ensure it has the expected number of rows or columns. Extracting the range is extremely simple
         */
 
     let odk = new ODKConverter()
@@ -84,7 +92,11 @@ describe('ODKSurvey', () => {
     let range = XLSX.utils.decode_range(wb.Sheets[wb.SheetNames[0]]['!ref'])
     let ncols = range.e.c - range.s.c + 1
 
-    expect(ncols).toEqual(ODK2_N_COLS)
+    expect(ncols).toBeGreaterThanOrEqual(ODK2_MIN_NUM_COLS)
+
+    let colNames = get_header_row(wb.Sheets['survey'])
+
+    ODK2_REQUIRED_COLS.forEach(col => expect(colNames).toContain(col))
   })
 
   it('exports in valid ODK 2.0 XLSX', () => {
