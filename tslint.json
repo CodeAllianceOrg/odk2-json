@@ -1,6 +1,27 @@
 {
   "extends": [
+    "tslint:latest",
     "tslint-config-standard",
+    "tslint-consistent-codestyle",
+    "tslint-immutable",
     "tslint-config-prettier"
-  ]
+  ],
+  "rules": {
+    "semicolon": [
+      true, "always"
+    ],
+    "indent": [
+      true, "spaces", 4
+    ],
+
+    "no-var-keyword": true,
+    "no-parameter-reassignment": true,
+    "typedef": [true, "call-signature"],
+
+    "readonly-keyword": true,
+    "no-let": true,
+    "no-object-mutation": true,
+
+    "no-mixed-interface": true
+  }
 }

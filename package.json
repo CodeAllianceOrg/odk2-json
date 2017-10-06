@@ -36,11 +36,11 @@
   },
   "lint-staged": {
     "src/**/*.ts": [
-      "prettier --write --no-semi --single-quote",
+      "prettier --write --tab-width 4 --single-quote",
       "git add"
     ],
     "test/**/*.ts": [
-      "prettier --write --no-semi --single-quote",
+      "prettier --write --tab-width 4 --single-quote",
       "git add"
     ]
   },
@@ -107,6 +107,8 @@
     "tslint": "5.7.0",
     "tslint-config-prettier": "1.5.0",
     "tslint-config-standard": "6.0.1",
+    "tslint-consistent-codestyle": "1.7.0",
+    "tslint-immutable": "4.4.0",
     "typedoc": "0.8.0",
     "typescript": "2.5.3",
     "underscore": "1.8.3",
