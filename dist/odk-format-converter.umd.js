@@ -28896,6 +28896,9 @@ XLSX.SSF = SSF;
 
 });
 
+var xlsx_1 = xlsx.utils;
+var xlsx_2 = xlsx.write;
+
 var __assign = (undefined && undefined.__assign) || Object.assign || function(t) {
     for (var s, i = 1, n = arguments.length; i < n; i++) {
         s = arguments[i];
@@ -28924,14 +28927,14 @@ var ODKSurvey = /** @class */ (function () {
     };
     ODKSurvey.prototype.toXLSXBinary = function () {
         var wb = this.toWorkbook();
-        return undefined(wb, { bookType: 'xlsx', type: 'binary' });
+        return xlsx_2(wb, { bookType: 'xlsx', type: 'binary' });
     };
     ODKSurvey.prototype.toXLSXBase64 = function () {
         var wb = this.toWorkbook();
-        return undefined(wb, { bookType: 'xlsx', type: 'base64' });
+        return xlsx_2(wb, { bookType: 'xlsx', type: 'base64' });
     };
     ODKSurvey.prototype.toWorkbook = function () {
-        var wb = undefined();
+        var wb = xlsx_1.book_new();
         var settings = [
             {
                 setting_name: 'table_id',
@@ -28949,7 +28952,7 @@ var ODKSurvey = /** @class */ (function () {
         var data = [];
         this.sections.forEach(function (section) {
             // append a sheet for each section
-            undefined(wb, undefined(section.questions.map(function (question) { return createSurveyRow(question); })), section.section_name);
+            xlsx_1.book_append_sheet(wb, xlsx_1.json_to_sheet(section.questions.map(function (question) { return createSurveyRow(question); })), section.section_name);
             // add the section to the main survey sheet
             data.push(createSurveyRow({
                 clause: "do section " + section.section_name
@@ -28960,8 +28963,8 @@ var ODKSurvey = /** @class */ (function () {
                 setting_name: section.section_name
             });
         });
-        undefined(wb, undefined(data), 'survey');
-        undefined(wb, undefined(settings), 'settings');
+        xlsx_1.book_append_sheet(wb, xlsx_1.json_to_sheet(data), 'survey');
+        xlsx_1.book_append_sheet(wb, xlsx_1.json_to_sheet(settings), 'settings');
         return wb;
     };
     return ODKSurvey;
