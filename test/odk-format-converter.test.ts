@@ -8,9 +8,16 @@ import * as XLSX from 'xlsx';
 const ODK2_MIN_NUM_COLS = 3;
 const ODK2_REQUIRED_COLS = ['type', 'name', 'display.text'];
 
-const EXAMPLE_SURVEY = [
+const EXAMPLE_SURVEY: ISection[] = [
     {
-        section_name: 'helloworld'
+        section_name: 'helloworld',
+        questions: [
+            {
+                type: 'text',
+                name: 'name',
+                'display.text': 'display text'
+            }
+        ]
     }
 ];
 
@@ -55,10 +62,12 @@ describe('ODKSurvey', () => {
         it('creates an excel worksheet for each section', () => {
             const sections: ISection[] = [
                 {
-                    section_name: 'testsection'
+                    section_name: 'testsection',
+                    questions: []
                 },
                 {
-                    section_name: 'anothersection'
+                    section_name: 'anothersection',
+                    questions: []
                 }
             ];
 
@@ -76,10 +85,12 @@ describe('ODKSurvey', () => {
         it('adds each section to the main survey sheet', () => {
             const sections: ISection[] = [
                 {
-                    section_name: 'testsection'
+                    section_name: 'testsection',
+                    questions: []
                 },
                 {
-                    section_name: 'anothersection'
+                    section_name: 'anothersection',
+                    questions: []
                 }
             ];
 
@@ -104,6 +115,46 @@ describe('ODKSurvey', () => {
 
             expect(sections.map(section => section.section_name)).toEqual(
                 clauses
+            );
+        });
+    });
+
+    describe('text questions', () => {
+        it('adds text questions to a section', () => {
+            const sections: ISection[] = [
+                {
+                    section_name: 'testsection',
+
+                    questions: [
+                        {
+                            type: 'text',
+                            name: 'name',
+                            'display.text': 'enter name'
+                        }
+                    ]
+                }
+            ];
+
+            const subject = ODKSurvey.fromJSON(sections);
+
+            const xlsx = subject.toXLSXBase64();
+
+            const wb = XLSX.read(xlsx, { type: 'base64' });
+
+            const sheet = wb.Sheets.testsection;
+
+            const json = XLSX.utils.sheet_to_json<ISurveyRow>(sheet);
+
+            const arr = json.filter(row => row.type === 'text');
+
+            expect(arr.length).toEqual(1);
+
+            const textQuestion = arr[0];
+            const expectedQuestionProps = sections[0].questions[0];
+
+            expect(textQuestion.name).toEqual(expectedQuestionProps.name);
+            expect(textQuestion['display.text']).toEqual(
+                expectedQuestionProps['display.text']
             );
         });
     });

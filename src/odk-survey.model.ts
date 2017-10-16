@@ -7,8 +7,16 @@ interface ISetting {
     readonly 'display.title'?: string;
 }
 
+export interface IQuestion {
+    readonly type: 'text';
+    readonly name: string;
+    readonly 'display.text': string;
+}
+
 export interface ISection {
     readonly section_name: string;
+
+    readonly questions: IQuestion[];
 }
 
 export interface ISurveyRow {
@@ -68,13 +76,9 @@ export class ODKSurvey {
 
             XLSX.utils.book_append_sheet(
                 wb,
-                XLSX.utils.json_to_sheet([
-                    createSurveyRow({
-                        type: 'text',
-                        name: 'name',
-                        'display.text': 'Enter name:'
-                    })
-                ]),
+                XLSX.utils.json_to_sheet(
+                    section.questions.map(question => createSurveyRow(question))
+                ),
                 section.section_name
             );
 
