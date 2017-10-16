@@ -24,7 +24,9 @@ const EXAMPLE_SURVEY: ISurvey = {
                 {
                     type: 'text',
                     name: 'name',
-                    'display.text': 'display text'
+                    'display.text': 'display text',
+                    'display.text.spanish': 'display text spanish',
+                    required: true
                 }
             ]
         }
@@ -156,7 +158,9 @@ describe('ODKSurvey', () => {
                         {
                             type: 'text',
                             name: 'name',
-                            'display.text': 'enter name'
+                            'display.text': 'enter name',
+                            'display.text.spanish': 'espanol enter name',
+                            required: true
                         }
                     ]
                 }
@@ -176,8 +180,12 @@ describe('ODKSurvey', () => {
             const expectedQuestionProps = sections[0].questions[0];
 
             expect(textQuestion.name).toEqual(expectedQuestionProps.name);
+            expect(textQuestion.required).toEqual('TRUE');
             expect(textQuestion['display.text']).toEqual(
                 expectedQuestionProps['display.text']
+            );
+            expect(textQuestion['display.text.spanish']).toEqual(
+                expectedQuestionProps['display.text.spanish']
             );
         });
     });

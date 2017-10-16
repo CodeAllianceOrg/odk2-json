@@ -11,6 +11,8 @@ export interface IQuestion {
     readonly type: 'text';
     readonly name: string;
     readonly 'display.text': string;
+    readonly 'display.text.spanish': string;
+    readonly required: boolean;
 }
 
 export interface ISection {
@@ -24,6 +26,7 @@ export interface ISurveyRow {
     readonly 'display.text': string;
     readonly name: string;
     readonly type: string;
+    readonly required: boolean;
 }
 
 export interface ISurvey {
@@ -37,7 +40,8 @@ const BASE_SURVEY_ROW: ISurveyRow = {
     clause: '',
     'display.text': '',
     name: '',
-    type: ''
+    type: '',
+    required: false
 };
 
 function createSurveyRow(partial?: Partial<ISurveyRow>): ISurveyRow {
