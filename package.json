@@ -1,6 +1,6 @@
 {
   "name": "odk2-format-converter",
-  "version": "0.0.0",
+  "version": "0.0.1",
   "description": "Convert between friendly JSON and ODK2.0 compatible XLSX",
   "keywords": [],
   "main": "dist/odk-format-converter.umd.js",
