@@ -16,5 +16,7 @@ export interface ISurveyRow {
 export declare class ODKSurvey {
     private sections;
     static fromJSON(input: ISection[]): ODKSurvey;
+    toXLSXBinary(): string;
     toXLSXBase64(): string;
+    private toWorkbook();
 }

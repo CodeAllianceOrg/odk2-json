@@ -51,7 +51,19 @@ export class ODKSurvey {
         return survey;
     }
 
+    public toXLSXBinary(): string {
+        const wb = this.toWorkbook();
+
+        return XLSX.write(wb, { bookType: 'xlsx', type: 'binary' });
+    }
+
     public toXLSXBase64(): string {
+        const wb = this.toWorkbook();
+
+        return XLSX.write(wb, { bookType: 'xlsx', type: 'base64' });
+    }
+
+    private toWorkbook(): XLSX.WorkBook {
         const wb = XLSX.utils.book_new();
 
         const settings: ISetting[] = [
@@ -93,8 +105,8 @@ export class ODKSurvey {
             // add the display data to the settings sheet
 
             settings.push({
-                setting_name: section.section_name,
-                display: ''
+                display: '',
+                setting_name: section.section_name
             });
         });
 
@@ -109,6 +121,6 @@ export class ODKSurvey {
             'settings'
         );
 
-        return XLSX.write(wb, { bookType: 'xlsx', type: 'base64' });
+        return wb;
     }
 }

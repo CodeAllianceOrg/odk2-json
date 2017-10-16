@@ -28916,7 +28916,15 @@ var ODKSurvey = /** @class */ (function () {
         survey.sections = input;
         return survey;
     };
+    ODKSurvey.prototype.toXLSXBinary = function () {
+        var wb = this.toWorkbook();
+        return undefined(wb, { bookType: 'xlsx', type: 'binary' });
+    };
     ODKSurvey.prototype.toXLSXBase64 = function () {
+        var wb = this.toWorkbook();
+        return undefined(wb, { bookType: 'xlsx', type: 'base64' });
+    };
+    ODKSurvey.prototype.toWorkbook = function () {
         var wb = undefined();
         var settings = [
             {
@@ -28942,13 +28950,13 @@ var ODKSurvey = /** @class */ (function () {
             }));
             // add the display data to the settings sheet
             settings.push({
-                setting_name: section.section_name,
-                display: ''
+                display: '',
+                setting_name: section.section_name
             });
         });
         undefined(wb, undefined(data), 'survey');
         undefined(wb, undefined(settings), 'settings');
-        return undefined(wb, { bookType: 'xlsx', type: 'base64' });
+        return wb;
     };
     return ODKSurvey;
 }());

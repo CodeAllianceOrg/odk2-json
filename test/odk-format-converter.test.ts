@@ -46,16 +46,34 @@ describe('ODKSurvey', () => {
         ODK2_REQUIRED_COLS.forEach(col => expect(colNames).toContain(col));
     });
 
-    it('exports in valid ODK 2.0 XLSX', () => {
-        const subject = ODKSurvey.fromJSON(EXAMPLE_SURVEY);
+    describe('export formats', () => {
+        it('exports in valid ODK 2.0 XLSX as a Base64 string', () => {
+            const subject = ODKSurvey.fromJSON(EXAMPLE_SURVEY);
 
-        const xlsx = subject.toXLSXBase64();
+            const xlsx = subject.toXLSXBase64();
 
-        const wb = XLSX.read(xlsx, { type: 'base64' });
+            const wb = XLSX.read(xlsx, { type: 'base64' });
 
-        const jsonWorkbook = to_json(wb);
+            const jsonWorkbook = to_json(wb);
 
-        expect(() => XLSXConverter2.processJSONWb(jsonWorkbook)).not.toThrow();
+            expect(() =>
+                XLSXConverter2.processJSONWb(jsonWorkbook)
+            ).not.toThrow();
+        });
+
+        it('exports in valid ODK 2.0 XLSX as a Binary string', () => {
+            const subject = ODKSurvey.fromJSON(EXAMPLE_SURVEY);
+
+            const xlsx = subject.toXLSXBinary();
+
+            const wb = XLSX.read(xlsx, { type: 'binary' });
+
+            const jsonWorkbook = to_json(wb);
+
+            expect(() =>
+                XLSXConverter2.processJSONWb(jsonWorkbook)
+            ).not.toThrow();
+        });
     });
 
     describe('sections', () => {
