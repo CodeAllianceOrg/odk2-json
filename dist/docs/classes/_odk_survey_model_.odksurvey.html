@@ -913,7 +913,7 @@ img { max-width: 100%; }
 			<a href="_odk_survey_model_.odksurvey.html" class="tsd-kind-icon">ODKSurvey</a>
 			<ul>
 				<li class=" tsd-kind-property tsd-parent-kind-class tsd-is-private">
-					<a href="_odk_survey_model_.odksurvey.html#sections" class="tsd-kind-icon">sections</a>
+					<a href="_odk_survey_model_.odksurvey.html#input" class="tsd-kind-icon">input</a>
 				</li>
 				<li class=" tsd-kind-method tsd-parent-kind-class tsd-is-private">
 					<a href="_odk_survey_model_.odksurvey.html#toworkbook" class="tsd-kind-icon">to<wbr>Workbook</a>
@@ -935,8 +935,11 @@ img { max-width: 100%; }
 		<li class=" tsd-kind-interface tsd-parent-kind-external-module">
 			<a href="../interfaces/_odk_survey_model_.isection.html" class="tsd-kind-icon">ISection</a>
 		</li>
-		<li class=" tsd-kind-interface tsd-parent-kind-external-module tsd-is-not-exported">
-			<a href="../interfaces/_odk_survey_model_.isetting.html" class="tsd-kind-icon">ISetting</a>
+		<li class=" tsd-kind-interface tsd-parent-kind-external-module">
+			<a href="../interfaces/_odk_survey_model_.isettingrow.html" class="tsd-kind-icon">ISetting<wbr>Row</a>
+		</li>
+		<li class=" tsd-kind-interface tsd-parent-kind-external-module">
+			<a href="../interfaces/_odk_survey_model_.isurvey.html" class="tsd-kind-icon">ISurvey</a>
 		</li>
 		<li class=" tsd-kind-interface tsd-parent-kind-external-module">
 			<a href="../interfaces/_odk_survey_model_.isurveyrow.html" class="tsd-kind-icon">ISurvey<wbr>Row</a>
@@ -966,7 +969,7 @@ img { max-width: 100%; }
 					<section class="tsd-index-section tsd-is-private tsd-is-private-protected">
 						<h3>Properties</h3>
 						<ul class="tsd-index-list">
-							<li class="tsd-kind-property tsd-parent-kind-class tsd-is-private"><a href="_odk_survey_model_.odksurvey.html#sections" class="tsd-kind-icon">sections</a></li>
+							<li class="tsd-kind-property tsd-parent-kind-class tsd-is-private"><a href="_odk_survey_model_.odksurvey.html#input" class="tsd-kind-icon">input</a></li>
 						</ul>
 					</section>
 					<section class="tsd-index-section ">
@@ -984,12 +987,12 @@ img { max-width: 100%; }
 		<section class="tsd-panel-group tsd-member-group tsd-is-private tsd-is-private-protected">
 			<h2>Properties</h2>
 			<section class="tsd-panel tsd-member tsd-kind-property tsd-parent-kind-class tsd-is-private">
-				<a name="sections" class="tsd-anchor"></a>
-				<h3><span class="tsd-flag ts-flagPrivate">Private</span> sections</h3>
-				<div class="tsd-signature tsd-kind-icon">sections<span class="tsd-signature-symbol">:</span> <a href="../interfaces/_odk_survey_model_.isection.html" class="tsd-signature-type">ISection</a><span class="tsd-signature-symbol">[]</span><span class="tsd-signature-symbol"> =&nbsp;[]</span></div>
+				<a name="input" class="tsd-anchor"></a>
+				<h3><span class="tsd-flag ts-flagPrivate">Private</span> input</h3>
+				<div class="tsd-signature tsd-kind-icon">input<span class="tsd-signature-symbol">:</span> <a href="../interfaces/_odk_survey_model_.isurvey.html" class="tsd-signature-type">ISurvey</a></div>
 				<aside class="tsd-sources">
 					<ul>
-						<li>Defined in <a href="https://github.com/CodeAllianceOrg/odk2-json/blob/856d9c9/src/odk-survey.model.ts#L44">odk-survey.model.ts:44</a></li>
+						<li>Defined in <a href="https://github.com/CodeAllianceOrg/odk2-json/blob/d8b3619/src/odk-survey.model.ts#L55">odk-survey.model.ts:55</a></li>
 					</ul>
 				</aside>
 			</section>
@@ -1000,16 +1003,16 @@ img { max-width: 100%; }
 				<a name="toworkbook" class="tsd-anchor"></a>
 				<h3><span class="tsd-flag ts-flagPrivate">Private</span> to<wbr>Workbook</h3>
 				<ul class="tsd-signatures tsd-kind-method tsd-parent-kind-class tsd-is-private">
-					<li class="tsd-signature tsd-kind-icon">to<wbr>Workbook<span class="tsd-signature-symbol">(</span><span class="tsd-signature-symbol">)</span><span class="tsd-signature-symbol">: </span><span class="tsd-signature-type">XLSX.WorkBook</span></li>
+					<li class="tsd-signature tsd-kind-icon">to<wbr>Workbook<span class="tsd-signature-symbol">(</span><span class="tsd-signature-symbol">)</span><span class="tsd-signature-symbol">: </span><span class="tsd-signature-type">WorkBook</span></li>
 				</ul>
 				<ul class="tsd-descriptions">
 					<li class="tsd-description">
 						<aside class="tsd-sources">
 							<ul>
-								<li>Defined in <a href="https://github.com/CodeAllianceOrg/odk2-json/blob/856d9c9/src/odk-survey.model.ts#L66">odk-survey.model.ts:66</a></li>
+								<li>Defined in <a href="https://github.com/CodeAllianceOrg/odk2-json/blob/d8b3619/src/odk-survey.model.ts#L77">odk-survey.model.ts:77</a></li>
 							</ul>
 						</aside>
-						<h4 class="tsd-returns-title">Returns <span class="tsd-signature-type">XLSX.WorkBook</span></h4>
+						<h4 class="tsd-returns-title">Returns <span class="tsd-signature-type">WorkBook</span></h4>
 					</li>
 				</ul>
 			</section>
@@ -1023,7 +1026,7 @@ img { max-width: 100%; }
 					<li class="tsd-description">
 						<aside class="tsd-sources">
 							<ul>
-								<li>Defined in <a href="https://github.com/CodeAllianceOrg/odk2-json/blob/856d9c9/src/odk-survey.model.ts#L60">odk-survey.model.ts:60</a></li>
+								<li>Defined in <a href="https://github.com/CodeAllianceOrg/odk2-json/blob/d8b3619/src/odk-survey.model.ts#L71">odk-survey.model.ts:71</a></li>
 							</ul>
 						</aside>
 						<h4 class="tsd-returns-title">Returns <span class="tsd-signature-type">string</span></h4>
@@ -1040,7 +1043,7 @@ img { max-width: 100%; }
 					<li class="tsd-description">
 						<aside class="tsd-sources">
 							<ul>
-								<li>Defined in <a href="https://github.com/CodeAllianceOrg/odk2-json/blob/856d9c9/src/odk-survey.model.ts#L54">odk-survey.model.ts:54</a></li>
+								<li>Defined in <a href="https://github.com/CodeAllianceOrg/odk2-json/blob/d8b3619/src/odk-survey.model.ts#L65">odk-survey.model.ts:65</a></li>
 							</ul>
 						</aside>
 						<h4 class="tsd-returns-title">Returns <span class="tsd-signature-type">string</span></h4>
@@ -1051,19 +1054,19 @@ img { max-width: 100%; }
 				<a name="fromjson" class="tsd-anchor"></a>
 				<h3><span class="tsd-flag ts-flagStatic">Static</span> fromJSON</h3>
 				<ul class="tsd-signatures tsd-kind-method tsd-parent-kind-class tsd-is-static">
-					<li class="tsd-signature tsd-kind-icon">fromJSON<span class="tsd-signature-symbol">(</span>input<span class="tsd-signature-symbol">: </span><a href="../interfaces/_odk_survey_model_.isection.html" class="tsd-signature-type">ISection</a><span class="tsd-signature-symbol">[]</span><span class="tsd-signature-symbol">)</span><span class="tsd-signature-symbol">: </span><a href="_odk_survey_model_.odksurvey.html" class="tsd-signature-type">ODKSurvey</a></li>
+					<li class="tsd-signature tsd-kind-icon">fromJSON<span class="tsd-signature-symbol">(</span>input<span class="tsd-signature-symbol">: </span><a href="../interfaces/_odk_survey_model_.isurvey.html" class="tsd-signature-type">ISurvey</a><span class="tsd-signature-symbol">)</span><span class="tsd-signature-symbol">: </span><a href="_odk_survey_model_.odksurvey.html" class="tsd-signature-type">ODKSurvey</a></li>
 				</ul>
 				<ul class="tsd-descriptions">
 					<li class="tsd-description">
 						<aside class="tsd-sources">
 							<ul>
-								<li>Defined in <a href="https://github.com/CodeAllianceOrg/odk2-json/blob/856d9c9/src/odk-survey.model.ts#L46">odk-survey.model.ts:46</a></li>
+								<li>Defined in <a href="https://github.com/CodeAllianceOrg/odk2-json/blob/d8b3619/src/odk-survey.model.ts#L57">odk-survey.model.ts:57</a></li>
 							</ul>
 						</aside>
 						<h4 class="tsd-parameters-title">Parameters</h4>
 						<ul class="tsd-parameters">
 							<li>
-								<h5>input: <a href="../interfaces/_odk_survey_model_.isection.html" class="tsd-signature-type">ISection</a><span class="tsd-signature-symbol">[]</span></h5>
+								<h5>input: <a href="../interfaces/_odk_survey_model_.isurvey.html" class="tsd-signature-type">ISurvey</a></h5>
 							</li>
 						</ul>
 						<h4 class="tsd-returns-title">Returns <a href="_odk_survey_model_.odksurvey.html" class="tsd-signature-type">ODKSurvey</a></h4>

@@ -28905,18 +28905,18 @@ var BASE_SURVEY_ROW = {
     clause: '',
     'display.text': '',
     name: '',
-    type: ''
+    type: '',
+    required: false
 };
 function createSurveyRow(partial) {
     return __assign({}, BASE_SURVEY_ROW, partial);
 }
 var ODKSurvey = /** @class */ (function () {
     function ODKSurvey() {
-        this.sections = [];
     }
     ODKSurvey.fromJSON = function (input) {
         var survey = new ODKSurvey();
-        survey.sections = input;
+        survey.input = input;
         return survey;
     };
     ODKSurvey.prototype.toXLSXBinary = function () {
@@ -28932,19 +28932,15 @@ var ODKSurvey = /** @class */ (function () {
         var settings = [
             {
                 setting_name: 'table_id',
-                value: 'a'
+                value: this.input.table_id
             },
             {
-                setting_name: 'form_id',
-                value: 'a'
-            },
-            {
-                'display.title': 'Sample',
+                'display.title': this.input.title,
                 setting_name: 'survey'
             }
         ];
         var data = [];
-        this.sections.forEach(function (section) {
+        this.input.sections.forEach(function (section) {
             // append a sheet for each section
             xlsx_1.book_append_sheet(wb, xlsx_1.json_to_sheet(section.questions.map(function (question) { return createSurveyRow(question); })), section.section_name);
             // add the section to the main survey sheet
