@@ -1,6 +1,6 @@
 import * as XLSX from 'xlsx';
 
-interface ISetting {
+export interface ISettingRow {
     readonly setting_name: string;
     readonly value?: string;
     readonly display?: string;
@@ -26,6 +26,13 @@ export interface ISurveyRow {
     readonly type: string;
 }
 
+export interface ISurvey {
+    readonly title: string;
+    readonly table_id: string;
+
+    readonly sections: ISection[];
+}
+
 const BASE_SURVEY_ROW: ISurveyRow = {
     clause: '',
     'display.text': '',
@@ -41,12 +48,12 @@ function createSurveyRow(partial?: Partial<ISurveyRow>): ISurveyRow {
 }
 
 export class ODKSurvey {
-    private sections: ISection[] = [];
+    private input: ISurvey;
 
-    public static fromJSON(input: ISection[]): ODKSurvey {
+    public static fromJSON(input: ISurvey): ODKSurvey {
         const survey = new ODKSurvey();
 
-        survey.sections = input;
+        survey.input = input;
 
         return survey;
     }
@@ -66,24 +73,20 @@ export class ODKSurvey {
     private toWorkbook(): XLSX.WorkBook {
         const wb = XLSX.utils.book_new();
 
-        const settings: ISetting[] = [
+        const settings: ISettingRow[] = [
             {
                 setting_name: 'table_id',
-                value: 'a'
+                value: this.input.table_id
             },
             {
-                setting_name: 'form_id',
-                value: 'a'
-            },
-            {
-                'display.title': 'Sample',
+                'display.title': this.input.title,
                 setting_name: 'survey'
             }
         ];
 
         const data: ISurveyRow[] = [];
 
-        this.sections.forEach(section => {
+        this.input.sections.forEach(section => {
             // append a sheet for each section
 
             XLSX.utils.book_append_sheet(

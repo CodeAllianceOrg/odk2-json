@@ -1,6 +1,12 @@
 debugger;
 
-import { ODKSurvey, ISection, ISurveyRow } from '../src/odk-survey.model';
+import {
+    ODKSurvey,
+    ISection,
+    ISurvey,
+    ISurveyRow,
+    ISettingRow
+} from '../src/odk-survey.model';
 import { get_header_row, to_json } from './utils';
 import * as XLSXConverter2 from 'jswebviewer/xlsxconverter/XLSXConverter2';
 import * as XLSX from 'xlsx';
@@ -8,18 +14,33 @@ import * as XLSX from 'xlsx';
 const ODK2_MIN_NUM_COLS = 3;
 const ODK2_REQUIRED_COLS = ['type', 'name', 'display.text'];
 
-const EXAMPLE_SURVEY: ISection[] = [
-    {
-        section_name: 'helloworld',
-        questions: [
-            {
-                type: 'text',
-                name: 'name',
-                'display.text': 'display text'
-            }
-        ]
-    }
-];
+const EXAMPLE_SURVEY: ISurvey = {
+    title: 'isurvey',
+    table_id: 'table_id',
+    sections: [
+        {
+            section_name: 'helloworld',
+            questions: [
+                {
+                    type: 'text',
+                    name: 'name',
+                    'display.text': 'display text'
+                }
+            ]
+        }
+    ]
+};
+
+function createExampleSurvey(survey?: Partial<ISurvey>): XLSX.WorkBook {
+    const odkSurvey = ODKSurvey.fromJSON({
+        ...EXAMPLE_SURVEY,
+        ...survey
+    });
+
+    const xlsx = odkSurvey.toXLSXBase64();
+
+    return XLSX.read(xlsx, { type: 'base64' });
+}
 
 describe('ODKSurvey', () => {
     it('exports XLSX with the correct columns', () => {
@@ -48,11 +69,7 @@ describe('ODKSurvey', () => {
 
     describe('export formats', () => {
         it('exports in valid ODK 2.0 XLSX as a Base64 string', () => {
-            const subject = ODKSurvey.fromJSON(EXAMPLE_SURVEY);
-
-            const xlsx = subject.toXLSXBase64();
-
-            const wb = XLSX.read(xlsx, { type: 'base64' });
+            const wb = createExampleSurvey();
 
             const jsonWorkbook = to_json(wb);
 
@@ -89,11 +106,7 @@ describe('ODKSurvey', () => {
                 }
             ];
 
-            const subject = ODKSurvey.fromJSON(sections);
-
-            const xlsx = subject.toXLSXBase64();
-
-            const wb = XLSX.read(xlsx, { type: 'base64' });
+            const wb = createExampleSurvey({ sections });
 
             sections.forEach(section => {
                 expect(wb.SheetNames).toContain(section.section_name);
@@ -112,11 +125,7 @@ describe('ODKSurvey', () => {
                 }
             ];
 
-            const subject = ODKSurvey.fromJSON(sections);
-
-            const xlsx = subject.toXLSXBase64();
-
-            const wb = XLSX.read(xlsx, { type: 'base64' });
+            const wb = createExampleSurvey({ sections });
 
             // get the clause column data in order
             let clauses: string[] = XLSX.utils
@@ -153,11 +162,7 @@ describe('ODKSurvey', () => {
                 }
             ];
 
-            const subject = ODKSurvey.fromJSON(sections);
-
-            const xlsx = subject.toXLSXBase64();
-
-            const wb = XLSX.read(xlsx, { type: 'base64' });
+            const wb = createExampleSurvey({ sections });
 
             const sheet = wb.Sheets.testsection;
 
@@ -174,6 +179,54 @@ describe('ODKSurvey', () => {
             expect(textQuestion['display.text']).toEqual(
                 expectedQuestionProps['display.text']
             );
+        });
+    });
+
+    describe('survey properties', () => {
+        it('should support the survey name', () => {
+            const survey: Partial<ISurvey> = {
+                title: 'mysurveytitle'
+            };
+
+            const wb = createExampleSurvey(survey);
+
+            const settingsJsonArray = XLSX.utils.sheet_to_json<ISettingRow>(
+                wb.Sheets.settings
+            );
+
+            const arr = settingsJsonArray.filter(
+                row => row.setting_name === 'survey'
+            );
+
+            expect(arr.length).toEqual(1);
+
+            const expected = survey.title;
+            const actual = arr[0]['display.title'];
+
+            expect(actual).toEqual(expected);
+        });
+
+        it('should support the survey id', () => {
+            const survey: Partial<ISurvey> = {
+                table_id: 'mytableid'
+            };
+
+            const wb = createExampleSurvey(survey);
+
+            const settingsJsonArray = XLSX.utils.sheet_to_json<ISettingRow>(
+                wb.Sheets.settings
+            );
+
+            const arr = settingsJsonArray.filter(
+                row => row.setting_name === 'table_id'
+            );
+
+            expect(arr.length).toEqual(1);
+
+            const expected = survey.table_id;
+            const actual = arr[0]['value'];
+
+            expect(actual).toEqual(expected);
         });
     });
 });
