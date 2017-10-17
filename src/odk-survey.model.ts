@@ -1,14 +1,11 @@
 import * as XLSX from 'xlsx';
 
-export interface ISettingRow {
-    readonly setting_name: string;
-    readonly value?: string;
-    readonly display?: string;
-    readonly 'display.title'?: string;
-}
+/*
+  Internal models
+*/
 
 export interface IQuestion {
-    readonly type: 'text';
+    readonly type: string;
     readonly name: string;
     readonly 'display.text': string;
     readonly 'display.text.spanish': string;
@@ -21,14 +18,6 @@ export interface ISection {
     readonly questions: IQuestion[];
 }
 
-export interface ISurveyRow {
-    readonly clause: string;
-    readonly 'display.text': string;
-    readonly name: string;
-    readonly type: string;
-    readonly required: boolean;
-}
-
 export interface ISurvey {
     readonly title: string;
     readonly table_id: string;
@@ -36,30 +25,126 @@ export interface ISurvey {
     readonly sections: ISection[];
 }
 
+/*
+  Export/XLSX models
+*/
+
+export interface ISettingRow {
+    readonly setting_name: string;
+    readonly value?: string;
+    readonly display?: string;
+    readonly 'display.title'?: string;
+}
+
+export interface ISurveyRow {
+    readonly clause: string;
+    readonly 'display.text': string;
+    readonly 'display.text.spanish': string;
+    readonly name: string;
+    readonly type: string;
+    readonly required: boolean | string;
+}
+
 const BASE_SURVEY_ROW: ISurveyRow = {
     clause: '',
     'display.text': '',
+    'display.text.spanish': '',
     name: '',
-    type: '',
-    required: false
+    required: false,
+    type: ''
 };
 
-function createSurveyRow(partial?: Partial<ISurveyRow>): ISurveyRow {
+/*
+  Helpers
+*/
+
+export function createSurveyRow(partial?: Partial<ISurveyRow>): ISurveyRow {
     return {
         ...BASE_SURVEY_ROW,
         ...partial
     };
 }
 
+export function parseSettingsTable(
+    key: string = '',
+    wb: XLSX.WorkBook = XLSX.utils.book_new()
+): any {
+    const sheet = wb.Sheets.settings;
+    const json = XLSX.utils.sheet_to_json<ISettingRow>(sheet);
+
+    for (const row of json) {
+        if (key === row.setting_name) {
+            switch (key) {
+                case 'survey':
+                    return row['display.title'];
+                case 'table_id':
+                    return row.value;
+            }
+        }
+    }
+
+    return null;
+}
+
+export function parseSections(wb: XLSX.WorkBook): ISection[] {
+    const sections: ISection[] = [];
+
+    const surveyJson = XLSX.utils.sheet_to_json<ISurveyRow>(wb.Sheets.survey);
+
+    // find the sections in order in the main survey sheet
+
+    surveyJson
+        .filter(row => row.clause.indexOf('do section') !== -1)
+        .forEach(row => {
+            const name = row.clause.replace('do section ', '');
+            const questions: IQuestion[] = [];
+
+            // find the sheet associated with this section in order to find the questions
+
+            const sheet = wb.Sheets[name];
+
+            const sectionJson = XLSX.utils.sheet_to_json<ISurveyRow>(sheet);
+
+            sectionJson.forEach(question => {
+                questions.push({
+                    'display.text': question['display.text'],
+                    'display.text.spanish': question['display.text.spanish'],
+                    name: question.name,
+                    required: question.required === 'TRUE',
+                    type: question.type
+                });
+            });
+
+            sections.push({
+                questions,
+                section_name: name
+            });
+        });
+
+    return sections;
+}
+
 export class ODKSurvey {
-    private input: ISurvey;
+    constructor(private readonly input: ISurvey) {}
 
     public static fromJSON(input: ISurvey): ODKSurvey {
-        const survey = new ODKSurvey();
-
-        survey.input = input;
+        const survey = new ODKSurvey(input);
 
         return survey;
+    }
+
+    public static fromXLSXBase64(input: string): ODKSurvey {
+        const wb = XLSX.read(input, { type: 'base64' });
+
+        return new ODKSurvey({
+            sections: parseSections(wb),
+            table_id: parseSettingsTable('table_id', wb),
+            title: parseSettingsTable('survey', wb)
+        });
+    }
+
+    public toJSON(): ISurvey {
+        return this.input;
     }
 
     public toXLSXBinary(): string {

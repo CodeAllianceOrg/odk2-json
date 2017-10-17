@@ -5,11 +5,14 @@ import {
     ISection,
     ISurvey,
     ISurveyRow,
-    ISettingRow
+    ISettingRow,
+    parseSettingsTable
 } from '../src/odk-survey.model';
 import { get_header_row, to_json } from './utils';
 import * as XLSXConverter2 from 'jswebviewer/xlsxconverter/XLSXConverter2';
 import * as XLSX from 'xlsx';
+import * as fs from 'fs';
+import * as path from 'path';
 
 const ODK2_MIN_NUM_COLS = 3;
 const ODK2_REQUIRED_COLS = ['type', 'name', 'display.text'];
@@ -44,6 +47,17 @@ function createExampleSurvey(survey?: Partial<ISurvey>): XLSX.WorkBook {
     return XLSX.read(xlsx, { type: 'base64' });
 }
 
+function loadExampleSurveyForBase64Import(survey?: Partial<ISurvey>): string {
+    const odkSurvey = ODKSurvey.fromJSON({
+        ...EXAMPLE_SURVEY,
+        ...survey
+    });
+
+    const xlsx = odkSurvey.toXLSXBase64();
+
+    return xlsx;
+}
+
 describe('ODKSurvey', () => {
     it('exports XLSX with the correct columns', () => {
         /*
@@ -69,7 +83,24 @@ describe('ODKSurvey', () => {
         ODK2_REQUIRED_COLS.forEach(col => expect(colNames).toContain(col));
     });
 
+    describe('import formats', () => {
+        it('imports valid ODK 2.0 Base64 string into the internal representation', () => {
+            const surveyString = loadExampleSurveyForBase64Import();
+            let odkSurvey: ODKSurvey = ODKSurvey.fromXLSXBase64(surveyString);
+
+            const survey = odkSurvey.toJSON();
+
+            expect(survey).toEqual(EXAMPLE_SURVEY);
+        });
+    });
+
     describe('export formats', () => {
+        it('exports its internal representation', () => {
+            const odkSurvey = ODKSurvey.fromJSON(EXAMPLE_SURVEY);
+
+            expect(odkSurvey.toJSON()).toBeInstanceOf(Object);
+        });
+
         it('exports in valid ODK 2.0 XLSX as a Base64 string', () => {
             const wb = createExampleSurvey();
 
@@ -235,6 +266,21 @@ describe('ODKSurvey', () => {
             const actual = arr[0]['value'];
 
             expect(actual).toEqual(expected);
+        });
+    });
+});
+
+describe('helper functions', () => {
+    describe('parseSettingsTable', () => {
+        it('should return a sensible default', () => {
+            expect(parseSettingsTable(undefined, undefined)).toBeNull();
+        });
+
+        it('should return null when the setting is missing', () => {
+            const wb = XLSX.utils.book_new();
+            XLSX.utils.book_append_sheet(wb, XLSX.utils.json_to_sheet([{}]));
+
+            expect(parseSettingsTable(undefined, wb)).toBeNull();
         });
     });
 });
