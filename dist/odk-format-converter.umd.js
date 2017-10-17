@@ -29135,6 +29135,7 @@ XLSX.SSF = SSF;
 
 var xlsx_1 = xlsx.utils;
 var xlsx_2 = xlsx.write;
+var xlsx_3 = xlsx.read;
 
 var __assign = (undefined && undefined.__assign) || Object.assign || function(t) {
     for (var s, i = 1, n = arguments.length; i < n; i++) {
@@ -29188,8 +29189,7 @@ function parseSections(wb) {
         // find the sheet associated with this section in order to find the questions
         var sheet = wb.Sheets[name];
         var sectionJson = xlsx_1.sheet_to_json(sheet);
-        sectionJson
-            .forEach(function (question) {
+        sectionJson.forEach(function (question) {
             questions.push({
                 'display.text': question['display.text'],
                 'display.text.spanish': question['display.text.spanish'],
@@ -29214,7 +29214,7 @@ var ODKSurvey = /** @class */ (function () {
         return survey;
     };
     ODKSurvey.fromXLSXBase64 = function (input) {
-        var wb = undefined(input, { type: 'base64' });
+        var wb = xlsx_3(input, { type: 'base64' });
         return new ODKSurvey({
             sections: parseSections(wb),
             table_id: parseSettingsTable('table_id', wb),
