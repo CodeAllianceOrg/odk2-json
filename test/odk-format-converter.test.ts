@@ -177,6 +177,45 @@ describe('ODKSurvey', () => {
                 clauses
             );
         });
+
+        it('wraps sections in begin screen/end screen clauses', () => {
+            const sections: ISection[] = [
+                {
+                    section_name: 'testsection',
+                    questions: []
+                }
+            ];
+
+            const wb = createExampleSurvey({ sections });
+
+            const sectionSheet = XLSX.utils.sheet_to_json<ISurveyRow>(
+                wb.Sheets.testsection
+            );
+
+            const beginSection: ISurveyRow = {
+                clause: 'begin screen',
+                'display.text': '',
+                'display.text.spanish': '',
+                name: '',
+                type: '',
+                required: ''
+            };
+
+            const endSection: ISurveyRow = {
+                clause: 'end screen',
+                'display.text': '',
+                'display.text.spanish': '',
+                name: '',
+                type: '',
+                required: ''
+            };
+
+            // the first row should be 'begin screen'
+            expect(sectionSheet[0]).toEqual(beginSection);
+
+            // the last row should be 'end screen'
+            expect(sectionSheet[sectionSheet.length - 1]).toEqual(endSection);
+        });
     });
 
     describe('text questions', () => {

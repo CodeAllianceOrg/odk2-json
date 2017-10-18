@@ -50,7 +50,7 @@ const BASE_SURVEY_ROW: ISurveyRow = {
     'display.text': '',
     'display.text.spanish': '',
     name: '',
-    required: false,
+    required: '',
     type: ''
 };
 
@@ -106,6 +106,10 @@ export function parseSections(wb: XLSX.WorkBook): ISection[] {
             const sectionJson = XLSX.utils.sheet_to_json<ISurveyRow>(sheet);
 
             sectionJson.forEach(question => {
+                if (['begin screen', 'end screen'].includes(question.clause)) {
+                    return;
+                }
+
                 questions.push({
                     'display.text': question['display.text'],
                     'display.text.spanish': question['display.text.spanish'],
@@ -180,9 +184,13 @@ export class ODKSurvey {
 
             XLSX.utils.book_append_sheet(
                 wb,
-                XLSX.utils.json_to_sheet(
-                    section.questions.map(question => createSurveyRow(question))
-                ),
+                XLSX.utils.json_to_sheet([
+                    createSurveyRow({ clause: 'begin screen' }),
+                    ...section.questions.map(question =>
+                        createSurveyRow(question)
+                    ),
+                    createSurveyRow({ clause: 'end screen' })
+                ]),
                 section.section_name
             );
 
