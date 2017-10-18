@@ -3,6 +3,8 @@ debugger;
 import {
     ODKSurvey,
     ISection,
+    ISection,
+    ISectionRow,
     ISurvey,
     ISurveyRow,
     ISettingRow,
@@ -16,6 +18,7 @@ import * as path from 'path';
 
 const ODK2_MIN_NUM_COLS = 3;
 const ODK2_REQUIRED_COLS = ['type', 'name', 'display.text'];
+const ODK2_MAIN_SURVEY_BAD_COLS = ['required'];
 
 const EXAMPLE_SURVEY: ISurvey = {
     title: 'isurvey',
@@ -81,6 +84,10 @@ describe('ODKSurvey', () => {
         const colNames = get_header_row(wb.Sheets.survey);
 
         ODK2_REQUIRED_COLS.forEach(col => expect(colNames).toContain(col));
+
+        ODK2_MAIN_SURVEY_BAD_COLS.forEach(col =>
+            expect(colNames).not.toContain(col)
+        );
     });
 
     describe('import formats', () => {
@@ -192,7 +199,7 @@ describe('ODKSurvey', () => {
                 wb.Sheets.testsection
             );
 
-            const beginSection: ISurveyRow = {
+            const beginSection: ISectionRow = {
                 clause: 'begin screen',
                 'display.text': '',
                 'display.text.spanish': '',
@@ -201,7 +208,7 @@ describe('ODKSurvey', () => {
                 required: ''
             };
 
-            const endSection: ISurveyRow = {
+            const endSection: ISectionRow = {
                 clause: 'end screen',
                 'display.text': '',
                 'display.text.spanish': '',
@@ -240,7 +247,7 @@ describe('ODKSurvey', () => {
 
             const sheet = wb.Sheets.testsection;
 
-            const json = XLSX.utils.sheet_to_json<ISurveyRow>(sheet);
+            const json = XLSX.utils.sheet_to_json<ISectionRow>(sheet);
 
             const arr = json.filter(row => row.type === 'text');
 

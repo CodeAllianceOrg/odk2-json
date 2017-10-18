@@ -36,7 +36,7 @@ export interface ISettingRow {
     readonly 'display.title'?: string;
 }
 
-export interface ISurveyRow {
+export interface ISectionRow {
     readonly clause: string;
     readonly 'display.text': string;
     readonly 'display.text.spanish': string;
@@ -45,7 +45,23 @@ export interface ISurveyRow {
     readonly required: boolean | string;
 }
 
+export interface ISurveyRow {
+    readonly clause: string;
+    readonly 'display.text': string;
+    readonly 'display.text.spanish': string;
+    readonly name: string;
+    readonly type: string;
+}
+
 const BASE_SURVEY_ROW: ISurveyRow = {
+    clause: '',
+    'display.text': '',
+    'display.text.spanish': '',
+    name: '',
+    type: ''
+};
+
+const BASE_SECTION_ROW: ISectionRow = {
     clause: '',
     'display.text': '',
     'display.text.spanish': '',
@@ -61,6 +77,13 @@ const BASE_SURVEY_ROW: ISurveyRow = {
 export function createSurveyRow(partial?: Partial<ISurveyRow>): ISurveyRow {
     return {
         ...BASE_SURVEY_ROW,
+        ...partial
+    };
+}
+
+export function createSectionRow(partial?: Partial<ISectionRow>): ISectionRow {
+    return {
+        ...BASE_SECTION_ROW,
         ...partial
     };
 }
@@ -103,7 +126,7 @@ export function parseSections(wb: XLSX.WorkBook): ISection[] {
 
             const sheet = wb.Sheets[name];
 
-            const sectionJson = XLSX.utils.sheet_to_json<ISurveyRow>(sheet);
+            const sectionJson = XLSX.utils.sheet_to_json<ISectionRow>(sheet);
 
             sectionJson.forEach(question => {
                 if (['begin screen', 'end screen'].includes(question.clause)) {
@@ -185,11 +208,11 @@ export class ODKSurvey {
             XLSX.utils.book_append_sheet(
                 wb,
                 XLSX.utils.json_to_sheet([
-                    createSurveyRow({ clause: 'begin screen' }),
+                    createSectionRow({ clause: 'begin screen' }),
                     ...section.questions.map(question =>
-                        createSurveyRow(question)
+                        createSectionRow(question)
                     ),
-                    createSurveyRow({ clause: 'end screen' })
+                    createSectionRow({ clause: 'end screen' })
                 ]),
                 section.section_name
             );
