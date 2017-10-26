@@ -13,6 +13,11 @@ export interface IQuestion {
 }
 
 export interface ISection {
+    readonly display: {
+        readonly title: string;
+        readonly 'title.spanish': string;
+    };
+
     readonly section_name: string;
 
     readonly questions: IQuestion[];
@@ -31,9 +36,9 @@ export interface ISurvey {
 
 export interface ISettingRow {
     readonly setting_name: string;
-    readonly value?: string;
-    readonly display?: string;
-    readonly 'display.title'?: string;
+    readonly value: string;
+    readonly 'display.title': string;
+    readonly 'display.title.spanish': string;
 }
 
 export interface ISectionRow {
@@ -70,6 +75,13 @@ const BASE_SECTION_ROW: ISectionRow = {
     type: ''
 };
 
+const BASE_SETTING_ROW: ISettingRow = {
+    'display.title': '',
+    'display.title.spanish': '',
+    setting_name: '',
+    value: ''
+};
+
 /*
   Helpers
 */
@@ -84,6 +96,13 @@ export function createSurveyRow(partial?: Partial<ISurveyRow>): ISurveyRow {
 export function createSectionRow(partial?: Partial<ISectionRow>): ISectionRow {
     return {
         ...BASE_SECTION_ROW,
+        ...partial
+    };
+}
+
+export function createSettingRow(partial?: Partial<ISettingRow>): ISettingRow {
+    return {
+        ...BASE_SETTING_ROW,
         ...partial
     };
 }
@@ -142,7 +161,18 @@ export function parseSections(wb: XLSX.WorkBook): ISection[] {
                 });
             });
 
+            // load the section's settings (i.e. display) from the associated
+            // row in the settings worksheet
+
+            const settings = XLSX.utils
+                .sheet_to_json<ISettingRow>(wb.Sheets.settings)
+                .filter(settingRow => settingRow.setting_name === name);
+
             sections.push({
+                display: {
+                    title: settings[0]['display.title'],
+                    'title.spanish': settings[0]['display.title.spanish']
+                },
                 questions,
                 section_name: name
             });
@@ -190,14 +220,14 @@ export class ODKSurvey {
         const wb = XLSX.utils.book_new();
 
         const settings: ISettingRow[] = [
-            {
+            createSettingRow({
                 setting_name: 'table_id',
                 value: this.input.table_id
-            },
-            {
+            }),
+            createSettingRow({
                 'display.title': this.input.title,
                 setting_name: 'survey'
-            }
+            })
         ];
 
         const data: ISurveyRow[] = [];
@@ -227,10 +257,13 @@ export class ODKSurvey {
 
             // add the display data to the settings sheet
 
-            settings.push({
-                display: '',
-                setting_name: section.section_name
-            });
+            settings.push(
+                createSettingRow({
+                    'display.title': section.display.title,
+                    'display.title.spanish': section.display['title.spanish'],
+                    setting_name: section.section_name
+                })
+            );
         });
 
         XLSX.utils.book_append_sheet(

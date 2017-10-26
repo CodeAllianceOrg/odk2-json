@@ -3,7 +3,6 @@ debugger;
 import {
     ODKSurvey,
     ISection,
-    ISection,
     ISectionRow,
     ISurvey,
     ISurveyRow,
@@ -26,6 +25,10 @@ const EXAMPLE_SURVEY: ISurvey = {
     sections: [
         {
             section_name: 'helloworld',
+            display: {
+                title: 'sectiontitle',
+                'title.spanish': 'sectiontitleinspanish'
+            },
             questions: [
                 {
                     type: 'text',
@@ -138,10 +141,18 @@ describe('ODKSurvey', () => {
             const sections: ISection[] = [
                 {
                     section_name: 'testsection',
+                    display: {
+                        title: 'title',
+                        'title.spanish': 'titlespanish'
+                    },
                     questions: []
                 },
                 {
                     section_name: 'anothersection',
+                    display: {
+                        title: 'title',
+                        'title.spanish': 'titlespanish'
+                    },
                     questions: []
                 }
             ];
@@ -157,11 +168,19 @@ describe('ODKSurvey', () => {
             const sections: ISection[] = [
                 {
                     section_name: 'testsection',
+                    display: {
+                        title: 'title',
+                        'title.spanish': 'titlespanish'
+                    },
                     questions: []
                 },
                 {
                     section_name: 'anothersection',
-                    questions: []
+                    questions: [],
+                    display: {
+                        title: 'title',
+                        'title.spanish': 'titlespanish'
+                    }
                 }
             ];
 
@@ -189,6 +208,10 @@ describe('ODKSurvey', () => {
             const sections: ISection[] = [
                 {
                     section_name: 'testsection',
+                    display: {
+                        title: 'title',
+                        'title.spanish': 'titlespanish'
+                    },
                     questions: []
                 }
             ];
@@ -223,6 +246,25 @@ describe('ODKSurvey', () => {
             // the last row should be 'end screen'
             expect(sectionSheet[sectionSheet.length - 1]).toEqual(endSection);
         });
+
+        it('stores the section display identifier', () => {
+            const sections: ISection[] = [
+                {
+                    section_name: 'testsection',
+                    display: {
+                        title: 'display.title',
+                        'title.spanish': 'display.title.spanish'
+                    },
+                    questions: []
+                }
+            ];
+
+            const actual = ODKSurvey.fromXLSXBase64(
+                loadExampleSurveyForBase64Import({ sections })
+            ).toJSON();
+
+            expect(actual.sections).toEqual(sections);
+        });
     });
 
     describe('text questions', () => {
@@ -230,7 +272,10 @@ describe('ODKSurvey', () => {
             const sections: ISection[] = [
                 {
                     section_name: 'testsection',
-
+                    display: {
+                        title: 'title',
+                        'title.spanish': 'titlespanish'
+                    },
                     questions: [
                         {
                             type: 'text',
