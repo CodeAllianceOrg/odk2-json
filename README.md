@@ -1,5 +1,7 @@
 # ODK 2.0 <-> [friendly] JSON Converter
 
+[![Build Status](https://travis-ci.org/CodeAllianceOrg/odk2-json.svg?branch=master)](https://travis-ci.org/CodeAllianceOrg/odk2-json) [![npm version](https://badge.fury.io/js/odk2-format-converter.svg)](https://badge.fury.io/js/odk2-format-converter)
+
 ## About
 
 This library was seeded by [Typescript Library Starter](https://github.com/alexjoverm/typescript-library-starter). See the link or below for more information.
