@@ -25,7 +25,9 @@ export interface ISection {
 
 export interface ISurvey {
     readonly title: string;
+
     readonly table_id: string;
+    readonly form_id: string;
 
     readonly sections: ISection[];
 }
@@ -86,6 +88,18 @@ const BASE_SETTING_ROW: ISettingRow = {
   Helpers
 */
 
+export function createFormVersion(dateSeed: number[] = []): string {
+    const today = new Date(...dateSeed);
+
+    const year = `${today.getFullYear()}`;
+    const month =
+        today.getMonth() >= 10 ? `${today.getMonth()}` : `0${today.getMonth()}`;
+    const date =
+        today.getDate() >= 10 ? `${today.getDate()}` : `0${today.getDate()}`;
+
+    return `${year}${month}${date}`;
+}
+
 export function createSurveyRow(partial?: Partial<ISurveyRow>): ISurveyRow {
     return {
         ...BASE_SURVEY_ROW,
@@ -120,6 +134,8 @@ export function parseSettingsTable(
                 case 'survey':
                     return row['display.title'];
                 case 'table_id':
+                    return row.value;
+                case 'form_id':
                     return row.value;
             }
         }
@@ -194,6 +210,7 @@ export class ODKSurvey {
         const wb = XLSX.read(input, { type: 'base64' });
 
         return new ODKSurvey({
+            form_id: parseSettingsTable('form_id', wb),
             sections: parseSections(wb),
             table_id: parseSettingsTable('table_id', wb),
             title: parseSettingsTable('survey', wb)
@@ -227,6 +244,16 @@ export class ODKSurvey {
             createSettingRow({
                 'display.title': this.input.title,
                 setting_name: 'survey'
+            }),
+            createSettingRow({
+                setting_name: 'form_id',
+                value:
+                    this.input.form_id ||
+                    `AUTOGEN${Math.floor(Math.random() * 100)}`
+            }),
+            createSettingRow({
+                setting_name: 'form_version',
+                value: createFormVersion()
             })
         ];
 

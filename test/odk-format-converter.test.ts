@@ -7,7 +7,8 @@ import {
     ISurvey,
     ISurveyRow,
     ISettingRow,
-    parseSettingsTable
+    parseSettingsTable,
+    createFormVersion
 } from '../src/odk-survey.model';
 import { get_header_row, to_json } from './utils';
 import * as XLSXConverter2 from 'jswebviewer/xlsxconverter/XLSXConverter2';
@@ -22,6 +23,7 @@ const ODK2_MAIN_SURVEY_BAD_COLS = ['required'];
 const EXAMPLE_SURVEY: ISurvey = {
     title: 'isurvey',
     table_id: 'table_id',
+    form_id: 'MYFORMID',
     sections: [
         {
             section_name: 'helloworld',
@@ -313,7 +315,7 @@ describe('ODKSurvey', () => {
     });
 
     describe('survey properties', () => {
-        it('should support the survey name', () => {
+        it('should support the survey display', () => {
             const survey: Partial<ISurvey> = {
                 title: 'mysurveytitle'
             };
@@ -336,27 +338,74 @@ describe('ODKSurvey', () => {
             expect(actual).toEqual(expected);
         });
 
-        it('should support the survey id', () => {
-            const survey: Partial<ISurvey> = {
-                table_id: 'mytableid'
-            };
+        it('should automatically generate and persist table_id, form_id, form_version properties', () => {
+            const properties = ['table_id', 'form_id', 'form_version'];
 
-            const wb = createExampleSurvey(survey);
+            let wb = createExampleSurvey({ form_id: null });
 
-            const settingsJsonArray = XLSX.utils.sheet_to_json<ISettingRow>(
+            let settingsJsonArray = XLSX.utils.sheet_to_json<ISettingRow>(
                 wb.Sheets.settings
             );
 
-            const arr = settingsJsonArray.filter(
-                row => row.setting_name === 'table_id'
+            let values = settingsJsonArray.filter(
+                row => properties.indexOf(row.setting_name) !== -1
             );
 
-            expect(arr.length).toEqual(1);
+            expect(values.length).toEqual(properties.length);
 
-            const expected = survey.table_id;
-            const actual = arr[0]['value'];
+            const initial_table_id = values.filter(
+                value => value.setting_name === 'table_id'
+            )[0].value;
+            const initial_form_id = values.filter(
+                value => value.setting_name === 'form_id'
+            )[0].value;
+            const initial_form_version = values.filter(
+                value => value.setting_name === 'form_version'
+            )[0].value;
 
-            expect(actual).toEqual(expected);
+            // form_id – A unique identifier for the form
+            expect(initial_form_id.length).toBeGreaterThan(0);
+
+            // form_version – A value used for version control of the form.
+            // The recommended format is yearmonthday (i.e. 20131212).
+            expect(initial_form_version.length).toEqual(8);
+
+            // table_id – The id of the table that form data gets stored in
+            expect(initial_table_id.length).toBeGreaterThan(0);
+
+            // convert the workbook into an ODKSurvey, then re-export
+            // confirm that these values are not manipulated once set
+
+            wb = XLSX.read(
+                ODKSurvey.fromXLSXBase64(
+                    XLSX.write(wb, { bookType: 'xlsx', type: 'base64' })
+                ).toXLSXBase64(),
+                { type: 'base64' }
+            );
+
+            settingsJsonArray = XLSX.utils.sheet_to_json<ISettingRow>(
+                wb.Sheets.settings
+            );
+
+            values = settingsJsonArray.filter(
+                row => properties.indexOf(row.setting_name) !== -1
+            );
+
+            expect(values.length).toEqual(properties.length);
+
+            const next_table_id = values.filter(
+                value => value.setting_name === 'table_id'
+            )[0].value;
+            const next_form_id = values.filter(
+                value => value.setting_name === 'form_id'
+            )[0].value;
+            const next_form_version = values.filter(
+                value => value.setting_name === 'form_version'
+            )[0].value;
+
+            expect(next_table_id).toEqual(initial_table_id);
+            expect(next_form_id).toEqual(initial_form_id);
+            expect(next_form_version).toEqual(initial_form_version);
         });
     });
 });
@@ -372,6 +421,43 @@ describe('helper functions', () => {
             XLSX.utils.book_append_sheet(wb, XLSX.utils.json_to_sheet([{}]));
 
             expect(parseSettingsTable(undefined, wb)).toBeNull();
+        });
+    });
+
+    describe('createFormVersion', () => {
+        it('should return todays date as a correctly formatted string', () => {
+            // form_version – A value used for version control of the form.
+            // The recommended format is yearmonthday (i.e. 20131212).
+
+            const formVersion = createFormVersion();
+
+            expect(formVersion.length).toEqual(8);
+
+            const today = new Date();
+            const year = formVersion.substr(0, 4);
+            const month = formVersion.substr(4, 2);
+            const date = formVersion.substr(6, 2);
+
+            expect(+year).toEqual(today.getFullYear());
+            expect(+month).toEqual(today.getMonth());
+            expect(+date).toEqual(today.getDate());
+        });
+
+        it('should return a padded month and date when necessary', () => {
+            const seed = [2004, 1, 1];
+
+            const formVersion = createFormVersion(seed);
+
+            expect(formVersion.length).toEqual(8);
+
+            const today = new Date(...seed);
+            const year = formVersion.substr(0, 4);
+            const month = formVersion.substr(4, 2);
+            const date = formVersion.substr(6, 2);
+
+            expect(+year).toEqual(today.getFullYear());
+            expect(+month).toEqual(today.getMonth());
+            expect(+date).toEqual(today.getDate());
         });
     });
 });
