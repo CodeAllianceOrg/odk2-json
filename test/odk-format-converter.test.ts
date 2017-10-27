@@ -21,7 +21,10 @@ const ODK2_REQUIRED_COLS = ['type', 'name', 'display.text'];
 const ODK2_MAIN_SURVEY_BAD_COLS = ['required'];
 
 const EXAMPLE_SURVEY: ISurvey = {
-    title: 'isurvey',
+    display: {
+        title: 'englishtitle',
+        'title.spanish': 'spanishtitle'
+    },
     table_id: 'table_id',
     form_id: 'MYFORMID',
     sections: [
@@ -317,7 +320,10 @@ describe('ODKSurvey', () => {
     describe('survey properties', () => {
         it('should support the survey display', () => {
             const survey: Partial<ISurvey> = {
-                title: 'mysurveytitle'
+                display: {
+                    title: 'english',
+                    'title.spanish': 'spanish'
+                }
             };
 
             const wb = createExampleSurvey(survey);
@@ -332,10 +338,15 @@ describe('ODKSurvey', () => {
 
             expect(arr.length).toEqual(1);
 
-            const expected = survey.title;
-            const actual = arr[0]['display.title'];
+            const englishExpected = survey.display.title;
+            const englishActual = arr[0]['display.title'];
 
-            expect(actual).toEqual(expected);
+            expect(englishActual).toEqual(englishExpected);
+
+            const spanishExpected = survey.display['title.spanish'];
+            const spanishActual = arr[0]['display.title.spanish'];
+
+            expect(spanishActual).toEqual(spanishExpected);
         });
 
         it('should automatically generate and persist table_id, form_id, form_version properties', () => {

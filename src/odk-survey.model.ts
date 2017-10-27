@@ -24,7 +24,10 @@ export interface ISection {
 }
 
 export interface ISurvey {
-    readonly title: string;
+    readonly display: {
+        readonly title: string;
+        readonly 'title.spanish': string;
+    };
 
     readonly table_id: string;
     readonly form_id: string;
@@ -132,7 +135,10 @@ export function parseSettingsTable(
         if (key === row.setting_name) {
             switch (key) {
                 case 'survey':
-                    return row['display.title'];
+                    return {
+                        title: row['display.title'],
+                        'title.spanish': row['display.title.spanish']
+                    };
                 case 'table_id':
                     return row.value;
                 case 'form_id':
@@ -210,10 +216,10 @@ export class ODKSurvey {
         const wb = XLSX.read(input, { type: 'base64' });
 
         return new ODKSurvey({
+            display: parseSettingsTable('survey', wb),
             form_id: parseSettingsTable('form_id', wb),
             sections: parseSections(wb),
-            table_id: parseSettingsTable('table_id', wb),
-            title: parseSettingsTable('survey', wb)
+            table_id: parseSettingsTable('table_id', wb)
         });
     }
 
@@ -242,7 +248,8 @@ export class ODKSurvey {
                 value: this.input.table_id
             }),
             createSettingRow({
-                'display.title': this.input.title,
+                'display.title': this.input.display.title,
+                'display.title.spanish': this.input.display['title.spanish'],
                 setting_name: 'survey'
             }),
             createSettingRow({
